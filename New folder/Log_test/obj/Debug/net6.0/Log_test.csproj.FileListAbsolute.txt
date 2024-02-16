@@ -1,0 +1,15 @@
+D:\Blitz_Setup\QX.Blitz.Strategy.Straddle-4.7_justSell\New folder\Log_test\bin\Debug\net6.0\Log_test.exe
+D:\Blitz_Setup\QX.Blitz.Strategy.Straddle-4.7_justSell\New folder\Log_test\bin\Debug\net6.0\Log_test.deps.json
+D:\Blitz_Setup\QX.Blitz.Strategy.Straddle-4.7_justSell\New folder\Log_test\bin\Debug\net6.0\Log_test.runtimeconfig.json
+D:\Blitz_Setup\QX.Blitz.Strategy.Straddle-4.7_justSell\New folder\Log_test\bin\Debug\net6.0\Log_test.dll
+D:\Blitz_Setup\QX.Blitz.Strategy.Straddle-4.7_justSell\New folder\Log_test\bin\Debug\net6.0\ref\Log_test.dll
+D:\Blitz_Setup\QX.Blitz.Strategy.Straddle-4.7_justSell\New folder\Log_test\bin\Debug\net6.0\Log_test.pdb
+D:\Blitz_Setup\QX.Blitz.Strategy.Straddle-4.7_justSell\New folder\Log_test\obj\Debug\net6.0\Log_test.csproj.AssemblyReference.cache
+D:\Blitz_Setup\QX.Blitz.Strategy.Straddle-4.7_justSell\New folder\Log_test\obj\Debug\net6.0\Log_test.GeneratedMSBuildEditorConfig.editorconfig
+D:\Blitz_Setup\QX.Blitz.Strategy.Straddle-4.7_justSell\New folder\Log_test\obj\Debug\net6.0\Log_test.AssemblyInfoInputs.cache
+D:\Blitz_Setup\QX.Blitz.Strategy.Straddle-4.7_justSell\New folder\Log_test\obj\Debug\net6.0\Log_test.AssemblyInfo.cs
+D:\Blitz_Setup\QX.Blitz.Strategy.Straddle-4.7_justSell\New folder\Log_test\obj\Debug\net6.0\Log_test.csproj.CoreCompileInputs.cache
+D:\Blitz_Setup\QX.Blitz.Strategy.Straddle-4.7_justSell\New folder\Log_test\obj\Debug\net6.0\Log_test.dll
+D:\Blitz_Setup\QX.Blitz.Strategy.Straddle-4.7_justSell\New folder\Log_test\obj\Debug\net6.0\ref\Log_test.dll
+D:\Blitz_Setup\QX.Blitz.Strategy.Straddle-4.7_justSell\New folder\Log_test\obj\Debug\net6.0\Log_test.pdb
+D:\Blitz_Setup\QX.Blitz.Strategy.Straddle-4.7_justSell\New folder\Log_test\obj\Debug\net6.0\Log_test.genruntimeconfig.cache

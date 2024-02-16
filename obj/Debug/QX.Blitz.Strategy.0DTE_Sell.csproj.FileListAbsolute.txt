@@ -1,0 +1,5 @@
+D:\Blitz_Setup\Strat-code\QX.Blitz.Strategy.Straddle-4.7_ODTE_Sell\obj\Debug\QX.Blitz.Strategy.0DTE_Sell.csproj.AssemblyReference.cache
+D:\Blitz_Setup\Strat-code\QX.Blitz.Strategy.Straddle-4.7_ODTE_Sell\obj\Debug\QX.Blitz.Strategy.0DTE_Sell.csproj.CoreCompileInputs.cache
+D:\Blitz_Setup\Strat-code\QX.Blitz.Strategy.Straddle-4.7_ODTE_Sell\obj\Debug\QX.Blitz.Strategy.0DTE_Sell.csproj.CopyComplete
+D:\Blitz_Setup\Strat-code\QX.Blitz.Strategy.Straddle-4.7_ODTE_Sell\obj\Debug\QX.Blitz.Strategy.ODTE_Sell.dll
+D:\Blitz_Setup\Strat-code\QX.Blitz.Strategy.Straddle-4.7_ODTE_Sell\obj\Debug\QX.Blitz.Strategy.ODTE_Sell.pdb
