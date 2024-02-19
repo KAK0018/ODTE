@@ -53,11 +53,7 @@ namespace QX.Blitz.Strategy.ODTE_Sell
         public static Guid CommandStaticID = new Guid("{2949002B-CEC6-4F8B-867D-AFCC4D0C81C1}");
     }
 
-    static class TimeSliceFlagCommand
-    {
-        public static Guid CommandStaticID = new Guid("{E2179C9E-EE53-4B36-8CE2-0A8993B74E32}");
-    }
-
+    
     //[Guid("8CD0E7AF-7D50-462A-A8FD-7F1FF5B5A3CE")]
     static class StopAllCommand
     {

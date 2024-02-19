@@ -79,11 +79,11 @@ namespace QX.Blitz.Strategy.OptionsMLX1
         private Action<LogType, string> _logger = null;
         private List<double> _executionSpreadList = new List<double>();
 
-        public SmartMLegExecutorX2(List<LegDefination> legDefinationList, int MaxLot, bool FirstSellFlag = false, Action<LogType, string> logger = null)
+        public SmartMLegExecutorX2(List<LegDefination> legDefinationList, int MaxLot, Action<LogType, string> logger = null)
         {
             _legDefinationList = legDefinationList;
             this.MaxLot = MaxLot;
-            this.FirstSellFlag = FirstSellFlag;
+          
             //_logger = logger;
 
             foreach (LegDefination legDefination in legDefinationList)

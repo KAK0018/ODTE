@@ -83,6 +83,8 @@ namespace QX.Blitz.Strategy.ODTE_Sell
         [StrategyParameterAttribute("RollStrikeGap", 200, "Strike gap between rolling Hedge Strike")]
         private int Input_RollStrikeGap = 200;  //Strike gap between rolling Hedge Strike
 
+        [StrategyParameterAttribute("tempFlag", 0, "Temp Flag")]
+        private int Input_flag = 0;  //
 
 
         [StrategyParameterAttribute("MAX_QTY", 60000, "Max Qty on one strike",CategoryName = "Bounds")]
@@ -124,7 +126,6 @@ namespace QX.Blitz.Strategy.ODTE_Sell
         private DateTime _squareOffDateTime = DateTime.Now.AddHours(10);
         private DateTime _intTime = DateTime.Now.AddHours(10);
         private DateTime _currRefTime;
-        private DateTime _intraDaySliceStopTime = DateTime.Now.AddHours(10);
 
         private double _minGap = 100;
 
@@ -161,45 +162,31 @@ namespace QX.Blitz.Strategy.ODTE_Sell
                 _ivInfoFuturesInstrument = base.GetIVInfo(_ivFuturesInstrument);
                 _futuresMarketDataContainer = base.GetMarketDataContainer(_ivInfoFuturesInstrument.IVInstrument.InstrumentID);
 
-
-                //because NSE can change lotSize of the one experiy that too future and option lotsize can differ...
-                //_lotSize_fut = _ivInfoFuturesInstrument.IVInstrument.Instrument.LotSize;
-            
-
                 _squareOffDateTime = DateTime.Now.Date.Add(GetSqureTimeStamp(Input_SquareOffTime));
                 _intTime = DateTime.Now.Date.Add(GetSqureTimeStamp(Input_StartTime));
-                _intraDaySliceStopTime = DateTime.Now.Date.Add(GetSqureTimeStamp("15:00"));
-
+             
 
                 if (Input_OptionWeeklyExpiry.Trim() == "")
                 {
                     Input_OptionWeeklyExpiry = ((Futures)(_ivInfoFuturesInstrument.IVInstrument.Instrument)).ContractExpiration.ToString("ddMMMyyyy");
                 }
-
-                _indexName = "";
-                if (_ivInfoFuturesInstrument.InstrumentName.ToUpper().Contains("BANKNIFTY"))
-                {
-                    _indexName = "Nifty Bank";
-                }
-                else if (_ivInfoFuturesInstrument.InstrumentName.ToUpper().Contains("NIFTY"))
-                {
-                    _indexName = "Nifty 50";
-                }
-
-                else if (_ivInfoFuturesInstrument.InstrumentName.ToUpper().Contains("FINNIFTY"))
-                {
-                    _indexName = "Nifty Fin Service";
-                }
-
+                
                 if (_ivInfoFuturesInstrument.InstrumentName.ToUpper().Contains("BANKNIFTY"))
                 {
                     _minGap = 100;
                 }
-                else if (_ivInfoFuturesInstrument.InstrumentName.ToUpper().Contains("NIFTY"))
+
+                else if (_ivInfoFuturesInstrument.InstrumentName.ToUpper().Contains("MIDCPNIFTY"))
+                {
+                    _minGap = 25;
+                }
+
+                else if (_ivInfoFuturesInstrument.InstrumentName.ToUpper().Contains("FINNIFTY"))
                 {
                     _minGap = 50;
                 }
-                else if (_ivInfoFuturesInstrument.InstrumentName.ToUpper().Contains("FINNIFTY"))
+
+                else if (_ivInfoFuturesInstrument.InstrumentName.ToUpper().Contains("NIFTY"))
                 {
                     _minGap = 50;
                 }
@@ -238,19 +225,13 @@ namespace QX.Blitz.Strategy.ODTE_Sell
                     double price = base.GetMarketDataContainer(option.InstrumentID).LastPrice;
                 }
 
-
-
-                //csvFileName = "Straddle_JustSell_" + base.GetStrategyInstanceInfo().InstanceName + "_" + DateTime.Now.Date.ToString("d") + ".txt";
-
-
                 // Reinitialize Executors based on registerd dynamic IVs
                 IVObject[] ivObjectList = base.TradableIVObjects;
                 foreach (IVObject optionIVObject in ivObjectList)
                 {
                     IOrderCommandEx orderExecutor = null;
                     IVInfo optionsIVInfo = base.GetIVInfo(optionIVObject);
-                    IVInfo optionIVInfo2;
-
+                   
                     if (optionsIVInfo.Statistics.NetPosition != 0)
                         _hasPosition = true;
 
@@ -364,10 +345,6 @@ namespace QX.Blitz.Strategy.ODTE_Sell
             if (t1 != null)
                 intialTransection = (bool)t1;
 
-            Object t2 = GetStrategySettings(varKeys.curRefTime_key.ToString());
-            if(t2 != null)
-                _currRefTime = DateTime.Parse((String)t2);
-
            
             return true;
         }
@@ -479,8 +456,7 @@ namespace QX.Blitz.Strategy.ODTE_Sell
         {
             List<ActionCommandInfo> actionCommandList = new List<ActionCommandInfo>();
 
-            actionCommandList.Add(ForceExitActionCommand());
-            actionCommandList.Add(TimeSliceFlagActionCommand());
+            actionCommandList.Add(ForceExitActionCommand());          
             actionCommandList.Add(StopAllActionCommand());
 
 
@@ -492,24 +468,11 @@ namespace QX.Blitz.Strategy.ODTE_Sell
         {
             //Lets not use any parameters as of now...
             List<ActionCommandFieldInfo> actionCommandParameterInfoList = new List<ActionCommandFieldInfo>();
-            //actionCommandParameterInfoList.Add(new ActionCommandFieldInfo(CancelOrderCommand.Param_OrderSide, FieldDataType.Int, (int)OrderSide.None));
-            //actionCommandParameterInfoList.Add(new ActionCommandFieldInfo(CancelOrderCommand.Param_OrderPrice, FieldDataType.Double, 0.00));
-
+        
             return CreateActionCommand(ForceExitCommand.CommandStaticID, "**Force Exit**", false, actionCommandParameterInfoList.ToArray());
         }
 
-        //command For stopping and Starting the time-slice..
-        private ActionCommandInfo TimeSliceFlagActionCommand()
-        {
-
-            List<ActionCommandFieldInfo> actionCommandParameterInfoList = new List<ActionCommandFieldInfo>();
-            //actionCommandParameterInfoList.Add(new ActionCommandFieldInfo(CancelOrderCommand.Param_OrderSide, FieldDataType.Int, (int)OrderSide.None));
-            //actionCommandParameterInfoList.Add(new ActionCommandFieldInfo(CancelOrderCommand.Param_OrderPrice, FieldDataType.Double, 0.00));
-
-            return CreateActionCommand(TimeSliceFlagCommand.CommandStaticID, "Time-Slice Flag", false, actionCommandParameterInfoList.ToArray());
-
-        }
-
+        
         //commmnad for the stopping all exisiting spread Exectuor..
         private ActionCommandInfo StopAllActionCommand()
         {
@@ -532,13 +495,7 @@ namespace QX.Blitz.Strategy.ODTE_Sell
                 ExecuteForceExit();
 
             }
-
-
-            else if (TimeSliceFlagCommand.CommandStaticID.Equals(commandStaticID))
-            {
-                ExecuteTimeSliceFlag();
-            }
-
+            
             else if (StopAllCommand.CommandStaticID.Equals(commandStaticID))
             {
                 ExecuteStopALL();
@@ -622,15 +579,7 @@ namespace QX.Blitz.Strategy.ODTE_Sell
             }
         }
 
-        //For tilting the timeSlice-flag , this function will be called 
-        //to tilt(chage the current turth value of the flag, opposite the pervious) the TimeSlice flag....
-        private void ExecuteTimeSliceFlag()
-        {
-            TraceLogInfo("Current TimeSlice Flag:" + timeSliceFlag + " || Changing to:" + !timeSliceFlag);
-            timeSliceFlag = !timeSliceFlag;
-        
-        }
-
+       
         //This is function that will be called when ForceExit command Triggerd...
         private void ExecuteForceExit()
         {
@@ -899,7 +848,7 @@ namespace QX.Blitz.Strategy.ODTE_Sell
 
             //make New transection on the new strike...
             ExecuteCustOption(newPosition, newQty/newPosition.LotSize);
-            _orderExecutionMAP.TryGetValue(CurOptin.InstrumentID, out tempCommandEx2);
+            _orderExecutionMAP.TryGetValue(newPosition.InstrumentID, out tempCommandEx2);
 
             if (newPosition.OptionType == OptionType.CE)
             {
@@ -1052,6 +1001,7 @@ namespace QX.Blitz.Strategy.ODTE_Sell
                 //check for the all short Positions is Sqred off, if hedge Flag is Switch on..
                 if(switchToHedge && !IsAllSellPositionSquareOff())
                 {
+                    TraceLogInfo("Sqauring off all short Positions..");
                     foreach (var abc in _orderExecutionMAP.Values)
                     {
                         if (abc.IVInfo.Statistics.NetPosition < 0)
@@ -1074,7 +1024,7 @@ namespace QX.Blitz.Strategy.ODTE_Sell
 
                 //SmartExecutor Execution...
                 //if (_straddleBuyEx != null || _straddleSellEx != null)
-                    if (!(_straddleBuyEx == null || _straddleSellEx == null))
+                    if (!(_straddleBuyEx == null && _straddleSellEx == null))
                     {
 
                     //Execution..(If any Pending)
@@ -1135,6 +1085,7 @@ namespace QX.Blitz.Strategy.ODTE_Sell
                 //shift Strike above
                 if (switchToHedge == false && intialTransection == true && ((curSynthFut-lastRebBhav) > Input_DeltaPoint || (curSynthFut - lastRebBhav) < -Input_DeltaPoint))
                 {
+                    TraceLogInfo("rolling the sold Straddle..");
                     lastRebBhav = curSynthFut;    
                     int Qty = 0;
                     //buy back the PRevious Executed and Sell new strikes..
@@ -1187,13 +1138,12 @@ namespace QX.Blitz.Strategy.ODTE_Sell
 
                         //need to check here is sit already cleared or not..
                         _legDefinationListSell = new List<LegDefination> ();
-                        _legDefinationListSell = GetLegDefinationList(StrikePriceToSell,OrderSide.Sell, "First");
+                        _legDefinationListSell = GetLegDefinationList(StrikePriceToSell,OrderSide.Sell);
                         
                         //Selling the Straddle here..
 
                         _straddleSellEx = new SmartMLegExecutorX2(_legDefinationListSell, Input_OrderLotSize);
                         _straddleSellEx.spreadNature = -1;   //for selling the straddle..
-                        _straddleSellEx.FirstSellFlag = true;     //This is selling for the First Time...
                     
                     }
 
@@ -1208,6 +1158,7 @@ namespace QX.Blitz.Strategy.ODTE_Sell
                         ceHedgeOption = getOptionObject(StrikePriceToSell + Input_HedgeGap, OptionType.CE);
                         peHedgeOption = getOptionObject(StrikePriceToSell - Input_HedgeGap, OptionType.PE);
 
+                        TraceLogInfo(String.Format("Taking Hedges {[0]} CE , {[1]} PE", ceHedgeOption.StrikePrice, peHedgeOption.StrikePrice));
                         //It will take both hedge StrikeLong Positions...
                         ExecuteHedge(ceHedgeOption, peHedgeOption, QtyToHedge);
                     
@@ -1223,8 +1174,8 @@ namespace QX.Blitz.Strategy.ODTE_Sell
                 
                 ////*****
                 //It will call it in loop...
-                if(!(switchToHedge) && (ceHedgeOption != null && peHedgeOption != null))
-                //if(!(switchToHedge) && !(ceHedgeOption == null && peHedgeOption == null)&& (curSynthFut >= ceHedgeOption.StrikePrice || curSynthFut <= peHedgeOption.StrikePrice))
+                if(!(switchToHedge) && !(ceHedgeOption == null || peHedgeOption == null) && Input_flag ==1)
+                //if(!(switchToHedge) && !(ceHedgeOption == null || peHedgeOption == null)&& (curSynthFut >= ceHedgeOption.StrikePrice || curSynthFut <= peHedgeOption.StrikePrice))
                 {
                     switchToHedge = true;
                     intialTransection = true;
@@ -1235,17 +1186,26 @@ namespace QX.Blitz.Strategy.ODTE_Sell
                 //also when Executor is in progress, plz return it form here..
                 //Rolling the Strikes...
                 //can do it for PUT     ***first cehck for the Rollover logic..***
-                if(switchToHedge == true && !(ceHedgeOption == null))
+                if(switchToHedge == true && !(ceHedgeOption == null) && Input_flag == 1)
                 //if(switchToHedge == true && !(ceHedgeOption == null) &&curSynthFut >= ceHedgeOption.StrikePrice)
                 {
+                    
+                    Options newStriketoHedgeCE = getATMCEStrike((ceHedgeOption.StrikePrice + Input_RollStrikeGap));
+                    TraceLogInfo(String.Format("Rolling CE Strike from : [{0}] to : [{1]", ceHedgeOption.DisplayName, newStriketoHedgeCE.DisplayName));
+                    RollOverStrike(ceHedgeCommand, newStriketoHedgeCE);
+                }
 
-                    Options newStriketoHedge = getATMCEStrike((ceHedgeOption.StrikePrice + Input_RollStrikeGap));
-                    RollOverStrike(ceHedgeCommand, newStriketoHedge);
+                if (switchToHedge == true && !(peHedgeOption == null) && Input_flag == 1)
+                //if(switchToHedge == true && !(peHedgeOption == null) &&curSynthFut <= peHedgeOption.StrikePrice)
+                {
+
+                    Options newStriketoHedgePE = getATMPEStrike((peHedgeOption.StrikePrice - Input_RollStrikeGap));
+                    TraceLogInfo(String.Format("Rolling PE Strike from : [{0}] to : [{1]", peHedgeOption.DisplayName, newStriketoHedgePE.DisplayName));
+                    RollOverStrike(peHedgeCommand, newStriketoHedgePE);
                 }
 
 
 
-             
                 //Calculate the Greeks of the Positions...
 
                 double _curGamma = 0, _curDelta = 0;
@@ -1432,15 +1392,7 @@ namespace QX.Blitz.Strategy.ODTE_Sell
             }
         }
 
-        private double GetUnderlinePrice()
-        {
-            double futursCurrentLTP = _ivInfoFuturesInstrument.MarketDataContainer.LastPrice;
-
-
-            return futursCurrentLTP;
-
-        }
-
+      
         private IVInfo CreateRuntimeIVInfo(Options options)
         {
             try
