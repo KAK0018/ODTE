@@ -1158,7 +1158,7 @@ namespace QX.Blitz.Strategy.ODTE_Sell
                         ceHedgeOption = getOptionObject(StrikePriceToSell + Input_HedgeGap, OptionType.CE);
                         peHedgeOption = getOptionObject(StrikePriceToSell - Input_HedgeGap, OptionType.PE);
 
-                        TraceLogInfo(String.Format("Taking Hedges {[0]} CE , {[1]} PE", ceHedgeOption.StrikePrice, peHedgeOption.StrikePrice));
+                        TraceLogInfo(string.Format("Taking Hedges {0} CE , {1} PE", ceHedgeOption.StrikePrice, peHedgeOption.StrikePrice));
                         //It will take both hedge StrikeLong Positions...
                         ExecuteHedge(ceHedgeOption, peHedgeOption, QtyToHedge);
                     
@@ -1191,7 +1191,7 @@ namespace QX.Blitz.Strategy.ODTE_Sell
                 {
                     
                     Options newStriketoHedgeCE = getATMCEStrike((ceHedgeOption.StrikePrice + Input_RollStrikeGap));
-                    TraceLogInfo(String.Format("Rolling CE Strike from : [{0}] to : [{1]", ceHedgeOption.DisplayName, newStriketoHedgeCE.DisplayName));
+                    TraceLogInfo(string.Format("Rolling CE Strike from : [{0}] to : [{1}]", ceHedgeOption.DisplayName, newStriketoHedgeCE.DisplayName));
                     RollOverStrike(ceHedgeCommand, newStriketoHedgeCE);
                 }
 
@@ -1200,7 +1200,7 @@ namespace QX.Blitz.Strategy.ODTE_Sell
                 {
 
                     Options newStriketoHedgePE = getATMPEStrike((peHedgeOption.StrikePrice - Input_RollStrikeGap));
-                    TraceLogInfo(String.Format("Rolling PE Strike from : [{0}] to : [{1]", peHedgeOption.DisplayName, newStriketoHedgePE.DisplayName));
+                    TraceLogInfo(string.Format("Rolling PE Strike from : [{0}] to : [{1}]", peHedgeOption.DisplayName, newStriketoHedgePE.DisplayName));
                     RollOverStrike(peHedgeCommand, newStriketoHedgePE);
                 }
 
@@ -1328,15 +1328,15 @@ namespace QX.Blitz.Strategy.ODTE_Sell
         private void ExecuteCustPOrder(Options option, int lotSizeToTrade)
         {
             UpdateStrategyInfoText(string.Format("*****ExecuteOrder*****"));
-
-            if (lotSizeToTrade > 500)
+            /*
+            if (lotSizeToTrade > 2000)
             {
                 UpdateStrategyInfoText(string.Format("ExecuteOrder : The OrderAction is ignore as OrderLotSize[{0}] is greater than permissible limit.",
                     lotSizeToTrade));
 
                 return;
             }
-
+            */
 
             try
             {
